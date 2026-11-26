@@ -1,0 +1,26 @@
+# Raw and intermediate data (re-download via scripts/download_data.py)
+data/raw/*
+data/interim/*
+data/processed/*
+!data/**/.gitkeep
+!data/raw/MANIFEST.csv
+!data/raw/image/
+data/raw/image/*
+!data/raw/image/stations/
+data/raw/image/stations/*
+!data/raw/image/stations/image_stations_dl20261115.html
+
+# Generated outputs
+experiments/E011_locked_test/results/
+experiments/E011_locked_test/dev_check/
+figures/
+paper/
+
+# Python / OS
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.DS_Store

@@ -1,0 +1,13 @@
+# IMAGE 台站。坐标在运行时从 IMAGE 台站表读取，不在此手工录入。
+
+target_initial: SOD
+
+original_6: [AND, TRO, MAS, ABK, KIR, PEL]
+
+candidates_11: [AND, TRO, KEV, KIL, MAS, ABK, KIR, MUO, IVA, PEL, OUJ]
+
+leave_one_out_12: [SOD, AND, TRO, KEV, KIL, MAS, ABK, KIR, MUO, IVA, PEL, OUJ]
+
+flagged:
+  PEL: 2018 事件前参考相对 2017 训练常量 Y +149.3 nT、X 约 −41 nT，偏离其余台站
+  MUO: 同上 Y −110.6 nT，X 与其余台站反号

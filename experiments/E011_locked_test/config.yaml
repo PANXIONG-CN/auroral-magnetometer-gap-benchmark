@@ -1,0 +1,55 @@
+experiment: E011_locked_test
+purpose: 锁定测试评估（T10，C1–C3），只跑一次；方法与判读规则在运行前冻结
+events: test                        # 9 场锁定事件（D12）；--dev 试跑时换成开发事件
+file_station_set: leave_one_out_12
+targets: leave_one_out_12
+methods: [idw, nearest, ridge, secs]
+
+reference:
+  method_comparison: quiet_constant # D19
+  c1_kinds: [training_median, training_median_core, quiet_constant, decomposed]
+  min_coverage: 0.9
+  quiet_variation_smooth_min: 61
+  training_quiet_days_before: "2017-08-08T00:00"
+  training_lookback_days: 7
+
+c1:                                 # 判据：docs/01_research_design.md
+  methods: [secs, idw]
+  bias_threshold_nT: 10             # 偏置变化（安静常量 − 训练期中位数 − IGRF 主场变化）相对全网中位数 ≥ 10 nT（X 或 Y）的站列为基线有问题（同 D17 的台阶门槛）
+  min_remaining_share: 0.5          # 把这些站从输入与目标中去掉后，“训练期中位数 − 分解参考”的降幅剩不到一半或区间含 0，判为由少数站驱动
+
+sparsify: { max_removed: 8, min_inputs: 3, random_sizes: [3, 4, 5, 6, 7, 8, 9, 10], random_draws: 4, seed: 0 }
+bins: { nn_km: [0, 130, 160, 200, 250, 300, 350, 425, 550, 750] }
+d_star_km: 200                      # 冻结自 E009 闸门 A 规则的折点
+d_star_source: experiments/E009_sparsification/results/gate_a_11bfb76_cfg5ec8b3.json
+gate_a_refit_exclude: [OUJ]          # 闸门 A 复核：去掉全站网情景，站网外的 OUJ 单列（E009 研究记录）
+
+temporal:                           # 同 E010
+  history_min: 360
+  persistence_window_min: 180
+  bias_window_min: [5, 10, 30, 60, 120, 180]
+  kalman_a: [0.0, 0.9, 0.97, 0.99, 0.997, 0.999]
+  kalman_lam: [0.0001, 0.0004, 0.0025, 0.01, 0.04]
+  offset_bins_min: [0, 15, 30, 60, 90, 120, 180]
+
+waterfall:                          # F2：每一步只换一个因素，同一组分钟
+  temporal_method: kalman           # 冻结自 E010（ed6ca22 重跑）：稀疏配置下增益最大（降幅最小）的时间方法，−1.97 nT
+  steps:
+    - { label: "IDW, training median", method: idw, reference: training_median }
+    - { label: "IDW, decomposed", method: idw, reference: decomposed }
+    - { label: "SECS, decomposed", method: secs, reference: decomposed }
+    - { label: "SECS + temporal, decomposed", method: temporal, reference: decomposed }
+
+f4:                                 # 运行前定下：最强的锁定磁暴（Dst 最小），目标 SOD，Dst 最小值前后各 6 小时
+  event: "20240510"
+  target: SOD
+  half_window_h: 6
+  dev_event: "20170906"             # --dev 试跑用
+
+selection:
+  idw_power: [1, 2, 3, 4, 6, 8]
+  secs_epsilon: [0.005, 0.01, 0.02, 0.05, 0.1, 0.2]
+  ridge_alpha: [0.1, 1, 10, 100, 1000, 10000, 100000]
+  min_loo_minutes: 1440
+
+secs: { height_km: 110, grid_lat: [61.0, 73.0, 0.5], grid_lon: [8.0, 36.0, 1.0] }

@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "p1-polar-missing-station"
+version = "0.1.0"
+description = "Benchmark for reconstructing missing auroral-zone ground magnetometer data: reference handling, network sparsity and temporal information"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy",
+  "scipy",
+  "pandas",
+  "xarray",
+  "matplotlib",
+  "pyyaml",
+  "requests",
+  "scikit-learn",
+  "chaosmagpy",
+  "cartopy>=0.26.0",
+]
+
+[dependency-groups]
+dev = [
+    "pysecs>=0.4.0",
+    "pytest",
+    "ruff",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

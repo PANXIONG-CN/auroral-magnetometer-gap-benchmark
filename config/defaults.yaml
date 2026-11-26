@@ -1,0 +1,34 @@
+frame: geographic          # X 地理北向，Y 地理东向
+units: nT
+cadence_min: 1
+scenario_min: 180          # 每个情景 3 小时，不重叠
+
+secs:
+  ionosphere_height_km: 110   # 与研究方案一致；迁移学生代码时核对其取值
+  regularization: null        # 只在验证期选择
+
+reference:
+  method: chaos_plus_station_bias_plus_quiet   # D03
+  quiet_selection: kp           # 安静夜由 Kp 选出
+  causal_main_field: pre_event_release   # 因果路径用事件前已发布的模型版本
+
+metrics: [rmse_h, rmse_x, rmse_y, peak_err, peak_dt_min, dbdt_rmse]
+
+bootstrap:
+  level: event
+  n_resamples: 10000
+  ci: 0.95
+  seed: 0                    # 固定随机种子，结果可复现
+
+active_threshold_kp: 5
+
+event_screening:             # T1 测试事件筛选；PI 2026-11-17 确认（docs/05_decisions.md D14）
+  window_days: 5
+  dst_search_days: [-1, 2]   # 在 storm_date 前 1 天至后 2 天内找 Dst 最小值
+  onset_lookback_h: 24       # 主相起点：Dst 最小值前 24 h 内 Dst 最大的整点；窗口从该点所在 UT 日 00:00 开始
+  lookback_days: 20          # 窗口前回看天数：找安静日，E005 的参考也在这段内选；IMAGE 同时下载这一段
+  quiet_kp_max: "2+"         # 安静日：当日 8 个 Kp 都不超过 2+
+  quiet_day_min_coverage: 0.9  # 站在某个安静日 X、Y 同时有效 ≥ 90%，才算有参考
+  min_valid_stations: 9      # 逐分钟判定：有参考的站中同时有效 ≥ 9 个，任一目标站就有 ≥ 8 个有效邻站
+  min_frac_minutes: 0.99     # 满足上一条的分钟占窗口 ≥ 99%
+  min_events: 8

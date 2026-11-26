@@ -1,0 +1,51 @@
+# 事件划分。时间为 UTC。
+# 锁定规则见 docs/03_evaluation_protocol.md 第 2 节：locked: true 的事件只有 scripts/run_locked_test.py 能读取。
+
+training:
+  start: "2017-08-01T00:00"
+  end: "2017-08-08T00:00"     # 不含
+  use: 岭回归映射；模型参数在此固定
+
+validation:
+  start: "2017-08-08T00:00"
+  end: "2017-08-11T00:00"
+  use: 选 SECS 正则化参数与偏差校正窗口长度
+  real_outage_slice: { start: "2017-08-08T12:00", end: "2017-08-08T15:00" }
+
+development:
+  - id: "20170906"
+    start: "2017-09-06T00:00"
+    end: "2017-09-11T00:00"
+    note: 含 E001–E003 的开发切片 2017-09-08T00:00–03:00
+  - id: "20170927"
+    start: "2017-09-27T00:00"
+    end: "2017-10-02T00:00"
+    note: E004 已查看
+  - id: "20180825"
+    start: "2018-08-25T00:00"
+    end: "2018-08-30T00:00"
+    note: E004 已查看；PEL、MUO 参考异常
+
+test_candidates:    # T1 已核实（2026-11-17），见 docs/events_completeness.md。窗口按 D13 由 Dst 定位，end 不含。
+                    # d13：D13 原规则下是否通过；rec：安静日回看 20 天 + 可用站逐分钟判定。PI 2026-11-17 选定 rec 规则（D14），9 场全部入选。
+  - { id: "20150317", storm_date: "2015-03-17", status: screened, start: "2015-03-17T00:00", end: "2015-03-22T00:00", dst_min: -234, d13: pass, rec: pass }
+  - { id: "20150622", storm_date: "2015-06-22", status: screened, start: "2015-06-22T00:00", end: "2015-06-27T00:00", dst_min: -198, d13: pass, rec: pass }
+  - { id: "20151220", storm_date: "2015-12-20", status: screened, start: "2015-12-19T00:00", end: "2015-12-24T00:00", dst_min: -166, d13: fail, rec: pass, note: "10 天内无 Kp ≤ 2+ 安静日，最近在 15–16 天前；PEL 窗口内无数据" }
+  - { id: "20170528", storm_date: "2017-05-28", status: screened, start: "2017-05-27T00:00", end: "2017-06-01T00:00", dst_min: -146, d13: fail, rec: pass, note: "SOD、KEV、IVA、OUJ 窗口覆盖低于 90%；每分钟至少 8 站有效" }
+  - { id: "20211104", storm_date: "2021-11-04", status: screened, start: "2021-11-03T00:00", end: "2021-11-08T00:00", dst_min: -105, d13: pass, rec: pass }
+  - { id: "20230323", storm_date: "2023-03-23", status: screened, start: "2023-03-23T00:00", end: "2023-03-28T00:00", dst_min: -163, d13: pass, rec: pass }
+  - { id: "20230423", storm_date: "2023-04-23", status: screened, start: "2023-04-23T00:00", end: "2023-04-28T00:00", dst_min: -213, d13: pass, rec: pass, note: "KIL、MUO 窗口覆盖 35%、30%" }
+  - { id: "20240510", storm_date: "2024-05-10", status: screened, start: "2024-05-10T00:00", end: "2024-05-15T00:00", dst_min: -406, d13: pass, rec: pass }
+  - { id: "20241010", storm_date: "2024-10-10", status: screened, start: "2024-10-10T00:00", end: "2024-10-15T00:00", dst_min: -333, d13: pass, rec: pass }
+
+test:               # PI 2026-11-17 确认（D14）。locked: true 的事件连同窗口前 20 天的参考期，只有 scripts/run_locked_test.py 能读取
+  - { id: "20150317", start: "2015-03-17T00:00", end: "2015-03-22T00:00", locked: true }
+  - { id: "20150622", start: "2015-06-22T00:00", end: "2015-06-27T00:00", locked: true }
+  - { id: "20151220", start: "2015-12-19T00:00", end: "2015-12-24T00:00", locked: true }
+  - { id: "20170528", start: "2017-05-27T00:00", end: "2017-06-01T00:00", locked: true }
+  - { id: "20211104", start: "2021-11-03T00:00", end: "2021-11-08T00:00", locked: true }
+  - { id: "20230323", start: "2023-03-23T00:00", end: "2023-03-28T00:00", locked: true }
+  - { id: "20230423", start: "2023-04-23T00:00", end: "2023-04-28T00:00", locked: true }
+  - { id: "20240510", start: "2024-05-10T00:00", end: "2024-05-15T00:00", locked: true }
+  - { id: "20241010", start: "2024-10-10T00:00", end: "2024-10-15T00:00", locked: true }
+test_locked_commit: "b189f35867a8a41e693acfa1f9f16259f20c8bf8"   # 锁定提交（D12）；锁定后 test 不再改动
